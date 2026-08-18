@@ -16,3 +16,4 @@ public class PaginaController {
         return "Essa empresa é especializada em livros usados, com uma variedade de títulos disponíveis para compra.";
     }
 }
+ 

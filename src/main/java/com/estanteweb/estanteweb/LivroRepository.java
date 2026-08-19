@@ -18,4 +18,17 @@ public class LivroRepository {
     public String contarLivros() {
         return "O acervo tem " + listarTodos().size() + " livros.";
     }
+
+    public List<Livro> listarAtePreco(double precoMaximo) {
+        List<Livro> livros = listarTodos();
+        List<Livro> livrosFiltrados = new ArrayList<>();
+
+        for (Livro livro : livros) {
+            if (livro.getPreco() <= precoMaximo) {
+                livrosFiltrados.add(livro);
+            }
+        }
+
+        return livrosFiltrados;
+    }
 }

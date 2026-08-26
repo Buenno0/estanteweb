@@ -4,17 +4,20 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-@RestController
+@Controller
 public class LivroController {
 
     private LivroRepository livroRepository = new LivroRepository();
 
     @GetMapping("/livros")
+    @ResponseBody
     public String getLivros() {
         var livros = livroRepository.listarTodos();
 
@@ -25,7 +28,14 @@ public class LivroController {
         return "Acervo EstanteWeb: " + acervo;
     }
 
+    @GetMapping("/livros/html")
+    public String livrosHtml(Model model) {
+        model.addAttribute("livros", livroRepository.listarTodos());
+        return "livros";
+    }
+
     @GetMapping("/livros/total")
+    @ResponseBody
     public String getTotalLivros() {
         return livroRepository.contarLivros();
     }
@@ -52,6 +62,7 @@ public class LivroController {
     }
 
     @GetMapping("/livros/quem-acessa")
+    @ResponseBody
     public String quemAcessa(@RequestHeader("User-Agent") String userAgent) {
         return "Acesso realizado por: " + userAgent;
     }

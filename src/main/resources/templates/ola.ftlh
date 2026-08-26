@@ -1,0 +1,1 @@
+<h1>bem vindo ${nomeLoja}, ${anoFundacao}</h1>

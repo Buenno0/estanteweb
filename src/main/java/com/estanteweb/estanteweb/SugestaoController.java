@@ -6,10 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.util.HtmlUtils;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 
-@RestController
+@Controller
 public class SugestaoController {
 
     private final SugestaoRepository sugestaoRepository;
@@ -19,6 +21,7 @@ public class SugestaoController {
     }
 
     @GetMapping(value = "/sugestoes/nova", produces = "text/html")
+    @ResponseBody
     public String novaSugestao() {
         return """
                 <!DOCTYPE html>
@@ -59,29 +62,10 @@ public class SugestaoController {
     }
 
     @GetMapping(value = "/sugestoes", produces = "text/html")
-    public String listarSugestoes() {
-        String itens = sugestaoRepository.listarTodas().stream()
-                .map(sugestao -> "<li>"
-                        + HtmlUtils.htmlEscape(sugestao.getNomeCliente())
-                        + " sugeriu "
-                        + HtmlUtils.htmlEscape(sugestao.getLivroSugerido())
-                        + "</li>")
-                .collect(Collectors.joining("\n"));
-
-        return """
-                <!DOCTYPE html>
-                <html lang="pt-BR">
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Sugestões - EstanteWeb</title>
-                </head>
-                <body>
-                    <h1>Sugestões recebidas</h1>
-                    <ul>
-                """ + itens + "\n" + """
-                    </ul>
-                </body>
-                </html>
-                """;
+    public String listarSugestoes(Model model) {
+        var sugestoes = sugestaoRepository.listarTodas();
+        model.addAttribute("sugestoes", sugestoes);
+        return "sugestoes"; 
+        
     }
 }

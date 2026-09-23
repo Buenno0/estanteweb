@@ -1,8 +1,10 @@
 package com.estanteweb.estanteweb;
 
+import java.util.Map;
+
 public class Livro {
 
-    private Long id;
+    private long id;
     private String titulo;
     private String autor;
     private Double preco;
@@ -11,19 +13,21 @@ public class Livro {
     public Livro() {
     }
 
-    public Livro(Long id, String titulo, String autor, Double preco, Integer ano) {
-        this.id = id;
-        this.titulo = titulo;
-        this.autor = autor;
-        this.preco = preco;
-        this.ano = ano;
+    public static Livro deMap(Map<String, Object> linha) {
+        Livro livro = new Livro();
+        livro.setId(((Number) linha.get("id")).longValue());
+        livro.setTitulo((String) linha.get("titulo"));
+        livro.setAutor((String) linha.get("autor"));
+        livro.setAno(((Number) linha.get("ano")).intValue());
+        livro.setPreco(((Number) linha.get("preco")).doubleValue());
+        return livro;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 

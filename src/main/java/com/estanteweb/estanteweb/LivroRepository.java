@@ -2,33 +2,43 @@ package com.estanteweb.estanteweb;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
+
+@Repository 
 public class LivroRepository {
     
+    @Autowired 
+    private JdbcTemplate jdbcTemplate;
+
     public List<Livro> listarTodos() {
+        String sql = "SELECT * FROM livro";
+        List<Map<String, Object>> linhas = jdbcTemplate.queryForList(sql);
         List<Livro> livros = new ArrayList<>();
-        livros.add(new Livro(1L, "<h1>Dom Casmurro</h1>", "Machado de Assis", 24.90, 1899));
-        livros.add(new Livro(2L, "A Hora da Estrela", "Clarice Lispector", 22.00, 1977));
-        livros.add(new Livro(3L, "O Senhor dos Anéis", "J.R.R. Tolkien", 19.99, 1954));
-        livros.add(new Livro(4L, "O Hobbit", "J.R.R. Tolkien", 14.99, 1937));
-        livros.add(new Livro(5L, "O Silmarillion", "J.R.R. Tolkien", 24.99, 1977));
+
+        for (Map<String, Object> linha : linhas) {
+            livros.add(Livro.deMap(linha));
+        }
+
         return livros;
     }
 
     public String contarLivros() {
-        return "O acervo tem " + listarTodos().size() + " livros.";
+        return jdbcTemplate.queryForObject("select count(*) from livro", String.class);
     }
 
     public List<Livro> listarAtePreco(double precoMaximo) {
-        List<Livro> livros = listarTodos();
-        List<Livro> livrosFiltrados = new ArrayList<>();
+        String sql = "SELECT * FROM livro WHERE preco <= ?";
+        List<Map<String, Object>> linhas = jdbcTemplate.queryForList(sql, precoMaximo);
+        List<Livro> livros = new ArrayList<>();
 
-        for (Livro livro : livros) {
-            if (livro.getPreco() <= precoMaximo) {
-                livrosFiltrados.add(livro);
-            }
+        for (Map<String, Object> linha : linhas) {
+            livros.add(Livro.deMap(linha));
         }
 
-        return livrosFiltrados;
+        return livros;
     }
 }

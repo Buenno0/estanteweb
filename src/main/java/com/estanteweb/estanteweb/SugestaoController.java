@@ -33,7 +33,7 @@ public class SugestaoController {
         }
 
         Sugestao sugestao = new Sugestao(nomeCliente, livroSugerido);
-        sugestaoRepository.adicionar(sugestao);
+        sugestaoRepository.salvar(sugestao);
 
         return "redirect:/sugestoes?enviada=true";
     }

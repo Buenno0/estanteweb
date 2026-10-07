@@ -41,4 +41,13 @@ public class LivroRepository {
 
         return livros;
     }
+
+    public void salvar(Livro livro) {
+        String sql = "INSERT INTO livro (titulo, autor, ano, preco) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(sql,
+                livro.getTitulo(),
+                livro.getAutor(),
+                livro.getAno(),
+                livro.getPreco());
+    }
 }

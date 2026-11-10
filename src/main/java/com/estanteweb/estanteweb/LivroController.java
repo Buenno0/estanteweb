@@ -1,5 +1,6 @@
 package com.estanteweb.estanteweb;
 
+import java.beans.PropertyEditorSupport;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -8,7 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,6 +25,20 @@ public class LivroController {
 
     @Autowired 
     private LivroRepository livroRepository ;
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Double.class, new PropertyEditorSupport() {
+            @Override
+            public void setAsText(String text) {
+                if (text == null || text.isBlank()) {
+                    setValue(null);
+                } else {
+                    setValue(Double.valueOf(text.trim().replace(',', '.')));
+                }
+            }
+        });
+    }
 
     @GetMapping("/livros")
     @ResponseBody
@@ -103,9 +120,40 @@ public class LivroController {
         return "livro";
     }
 
+    @GetMapping("/livros/{id}/editar")
+    public String formEditarLivro(@PathVariable Long id, Model model) {
+        Livro livro = livroRepository.buscarPorId(id);
+  
+        model.addAttribute("livro", livro);
+        return "livro-editar";
+    }
+
+    @PostMapping("/livros/{id}/editar")
+    public String editarLivro(@PathVariable Long id, @ModelAttribute Livro livro, Model model) {
+        if (livro.getAutor().isBlank() || livro.getTitulo().isBlank()) {
+            model.addAttribute("erro", "Autor e título são obrigatórios!");
+            model.addAttribute("livro", livro);
+            return "livro-editar";
+        }
+
+        livro.setId(id); 
+        livroRepository.atualizar(livro);
+
+        return "redirect:/livros/" + id;
+    }
+
+    @PostMapping("/livros/{id}/deletar")
+    public String deletarLivro(@PathVariable Long id) {
+        livroRepository.deletar(id);
+        return "redirect:/livros/html";
+    }
+
     @GetMapping("/livros/quem-acessa")
     @ResponseBody
     public String quemAcessa(@RequestHeader("User-Agent") String userAgent) {
         return "Acesso realizado por: " + userAgent;
     }
+
+   
+    
 }

@@ -16,4 +16,10 @@
     </ul>
 </#if>
 
+<p><a href="/livros/${livro.id?c}/editar">Editar este livro</a></p>
+
+<form method="POST" action="/livros/${livro.id?c}/deletar">
+    <button type="submit" onclick="return confirm('Tem certeza que deseja excluir este livro?');">Excluir livro</button>
+</form>
+
 <p><a href="/livros/html">Voltar para o acervo</a></p>

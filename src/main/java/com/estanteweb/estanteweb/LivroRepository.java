@@ -42,6 +42,47 @@ public class LivroRepository {
         return livros;
     }
 
+    public Livro buscarPorId(Long id) {
+        String sql = "SELECT * FROM livro WHERE id = ?";
+        List<Map<String, Object>> linhas = jdbcTemplate.queryForList(sql, id);
+
+        if (linhas.isEmpty()) {
+            return null;
+        }
+
+        return Livro.deMap(linhas.get(0));
+    }
+
+    public List<Livro> listarOrdenadoPor(String coluna) {
+        String sql = "SELECT * FROM livro";
+
+        if (coluna.equals("titulo") || coluna.equals("autor")
+                || coluna.equals("ano") || coluna.equals("preco")) {
+            sql = sql + " ORDER BY " + coluna;
+        }
+
+        List<Map<String, Object>> linhas = jdbcTemplate.queryForList(sql);
+        List<Livro> livros = new ArrayList<>();
+
+        for (Map<String, Object> linha : linhas) {
+            livros.add(Livro.deMap(linha));
+        }
+
+        return livros;
+    }
+
+    public List<Livro> listarDoMesmoAutor(String autor, Long idAtual) {
+        String sql = "SELECT * FROM livro WHERE autor = ? AND id <> ?";
+        List<Map<String, Object>> linhas = jdbcTemplate.queryForList(sql, autor, idAtual);
+        List<Livro> livros = new ArrayList<>();
+
+        for (Map<String, Object> linha : linhas) {
+            livros.add(Livro.deMap(linha));
+        }
+
+        return livros;
+    }
+
     public void salvar(Livro livro) {
         String sql = "INSERT INTO livro (titulo, autor, ano, preco) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql,
